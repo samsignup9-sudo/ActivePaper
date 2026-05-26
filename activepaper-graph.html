@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ActivePaper — Interactive Graph</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+  .ig-root { width: 100%; max-width: 760px; }
+  .ig-logo { font-size: 18px; font-weight: 600; color: #111; letter-spacing: -.3px; margin-bottom: 1rem; }
+  .ig-logo span { color: #185FA5; }
+  .ig-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .ig-header { padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .ig-title { font-size: 13px; font-weight: 600; color: #111; margin: 0 0 3px; }
+  .ig-sub { font-size: 12px; color: #64748b; margin: 0; }
+  .ig-badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; background: #E6F1FB; color: #0C447C; border: 1px solid #85B7EB; white-space: nowrap; }
+  .ig-controls { display: flex; gap: 8px; padding: 10px 1.25rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; align-items: center; }
+  .ig-lbl { font-size: 12px; color: #64748b; }
+  .tog { font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; color: #64748b; cursor: pointer; }
+  .tog.a { background: #E6F1FB; color: #0C447C; border-color: #85B7EB; }
+  .tog.b { background: #B5D4F4; color: #042C53; border-color: #378ADD; }
+  .tog.c { background: #042C53; color: #B5D4F4; border-color: #0C447C; }
+  .ig-body { padding: 1rem 1.25rem; }
+  .ig-legend { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  .ig-li { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #64748b; }
+  .ig-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+</style>
+</head>
+<body>
+<div class="ig-root">
+  <div class="ig-logo">active<span>paper</span></div>
+  <div class="ig-card">
+    <div class="ig-header">
+      <div>
+        <p class="ig-title">Fig. 3 — LTP magnitude over time by stimulation protocol</p>
+        <p class="ig-sub">fEPSP slope normalised to baseline (%). n=12 per group. Error bars = SEM.</p>
+      </div>
+      <span class="ig-badge"><i class="ti ti-adjustments-horizontal"></i> interactive figure</span>
+    </div>
+    <div class="ig-controls">
+      <span class="ig-lbl">Show:</span>
+      <button class="tog a" onclick="toggle('theta',this,'a')">θ-burst rTMS</button>
+      <button class="tog b" onclick="toggle('hf',this,'b')">HF rTMS (10 Hz)</button>
+      <button class="tog c" onclick="toggle('sham',this,'c')">Sham control</button>
+      <span style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        <span class="ig-lbl">Y axis:</span>
+        <select onchange="setY(this.value)" style="font-size:12px;padding:3px 6px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#1e293b">
+          <option value="200">0–200%</option>
+          <option value="250" selected>0–250%</option>
+          <option value="300">0–300%</option>
+        </select>
+      </span>
+    </div>
+    <div class="ig-body">
+      <canvas id="ltpC" height="260"></canvas>
+      <div class="ig-legend">
+        <div class="ig-li"><span class="ig-dot" style="background:#185FA5"></span>θ-burst rTMS</div>
+        <div class="ig-li"><span class="ig-dot" style="background:#378ADD"></span>HF rTMS (10 Hz)</div>
+        <div class="ig-li"><span class="ig-dot" style="background:#042C53"></span>Sham control</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const labels = ['-10','-5','0','5','10','20','30','40','50','60'];
+const raw = {
+  theta: [100,99,101,178,210,205,198,192,190,188],
+  hf:    [100,100,99,155,172,168,165,161,158,156],
+  sham:  [100,99,101,103,105,104,103,102,102,101]
+};
+const cols  = { theta:'#185FA5', hf:'#378ADD', sham:'#042C53' };
+const fills = { theta:'rgba(24,95,165,0.08)', hf:'rgba(55,138,221,0.08)', sham:'rgba(4,44,83,0.06)' };
+const names = { theta:'θ-burst rTMS', hf:'HF rTMS (10 Hz)', sham:'Sham control' };
+let vis = { theta:true, hf:true, sham:true };
+
+function makeDS() {
+  return Object.keys(raw).filter(k => vis[k]).map(k => ({
+    label: names[k], data: raw[k],
+    borderColor: cols[k], backgroundColor: fills[k],
+    borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+    pointBackgroundColor: cols[k], fill: false, tension: 0.3
+  }));
+}
+
+const chart = new Chart(document.getElementById('ltpC').getContext('2d'), {
+  type: 'line',
+  data: { labels, datasets: makeDS() },
+  options: {
+    responsive: true,
+    animation: { duration: 300 },
+    scales: {
+      x: {
+        title: { display: true, text: 'Time from stimulation (min)', font: { size: 12 }, color: '#888780' },
+        grid: { color: 'rgba(136,135,128,0.12)' },
+        ticks: { font: { size: 11 }, color: '#888780' }
+      },
+      y: {
+        min: 80, max: 250,
+        title: { display: true, text: 'fEPSP slope (% baseline)', font: { size: 12 }, color: '#888780' },
+        grid: { color: 'rgba(136,135,128,0.12)' },
+        ticks: { font: { size: 11 }, color: '#888780', callback: v => v + '%' }
+      }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+
+function toggle(k, btn, cls) {
+  vis[k] = !vis[k];
+  btn.classList.toggle(cls, vis[k]);
+  chart.data.datasets = makeDS();
+  chart.update();
+}
+function setY(v) {
+  chart.options.scales.y.max = parseInt(v);
+  chart.update();
+}
+</script>
+</body>
+</html>

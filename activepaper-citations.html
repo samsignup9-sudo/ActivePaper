@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ActivePaper — Citation Hover</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+  .ch-root { width: 100%; max-width: 720px; }
+  .ch-logo { font-size: 18px; font-weight: 600; color: #111; letter-spacing: -.3px; margin-bottom: 1rem; }
+  .ch-logo span { color: #185FA5; }
+  .ch-label { font-size: 12px; color: #64748b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .ch-para { font-size: 14px; line-height: 1.95; color: #1e293b; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .cit { position: relative; display: inline; }
+  .cit-link { color: #185FA5; font-size: 12px; vertical-align: super; cursor: pointer; font-weight: 600; background: #E6F1FB; border-radius: 3px; padding: 0 3px; }
+  .cit-card { display: none; position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(100% + 10px); z-index: 10; width: 290px; background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px 14px; font-size: 12px; line-height: 1.6; color: #1e293b; box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+  .cit:hover .cit-card { display: block; }
+  .cit-title { font-weight: 600; font-size: 13px; color: #111; margin-bottom: 4px; line-height: 1.4; }
+  .cit-authors { color: #64748b; font-size: 11px; margin-bottom: 6px; }
+  .cit-journal { font-size: 11px; background: #E6F1FB; color: #185FA5; padding: 2px 7px; border-radius: 10px; display: inline-block; margin-bottom: 8px; }
+  .cit-summary { color: #475569; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 7px; margin-top: 2px; }
+  .cit-summary strong { color: #185FA5; display: block; font-size: 11px; margin-bottom: 2px; }
+  .arrow { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 10px; height: 10px; background: #fff; border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+  .kw { background: #E6F1FB; border-bottom: 2px solid #378ADD; padding: 1px 2px; border-radius: 2px; color: #0C447C; }
+  .ac { background: #B5D4F4; border-bottom: 2px dashed #185FA5; padding: 1px 2px; border-radius: 2px; color: #042C53; }
+</style>
+</head>
+<body>
+<div class="ch-root">
+  <div class="ch-logo">active<span>paper</span></div>
+  <div class="ch-label"><i class="ti ti-cursor-text"></i> Hover over any citation number to see an instant paper summary</div>
+  <div class="ch-para">
+    Accumulating evidence suggests that non-invasive brain stimulation can durably reshape synaptic connectivity. Theta-burst protocols in particular have been shown to produce <span class="kw">LTP</span>-like changes in cortical excitability
+
+    <span class="cit">
+      <span class="cit-link">[1]</span>
+      <div class="cit-card">
+        <div class="cit-title">Theta-burst stimulation of the human motor cortex</div>
+        <div class="cit-authors">Huang Y-Z, Edwards MJ, Rounis E, et al.</div>
+        <span class="cit-journal">Neuron &middot; 2005</span>
+        <div class="cit-summary"><strong>One-liner</strong>Short bursts of TMS at theta frequency produce long-lasting increases or decreases in motor cortex excitability depending on whether the pattern is continuous or intermittent.</div>
+        <div class="arrow"></div>
+      </div>
+    </span>
+
+    that may outlast the stimulation window by hours. The <span class="kw">BDNF</span> pathway appears central to this consolidation
+
+    <span class="cit">
+      <span class="cit-link">[2]</span>
+      <div class="cit-card">
+        <div class="cit-title">BDNF–TrkB signalling in synaptic plasticity and memory</div>
+        <div class="cit-authors">Minichiello L.</div>
+        <span class="cit-journal">Nature Reviews Neuroscience &middot; 2009</span>
+        <div class="cit-summary"><strong>One-liner</strong>BDNF binding to TrkB receptors activates downstream cascades essential for the late phase of LTP and the formation of long-term memories in the hippocampus.</div>
+        <div class="arrow"></div>
+      </div>
+    </span>
+
+    , with <span class="ac">BDNF</span> release driven by activity-dependent transcription. Parallel work in rodent models demonstrates that hippocampal <span class="kw">LTP</span> induction requires coincident activation of <span class="kw">NMDA receptors</span> and voltage-gated calcium channels
+
+    <span class="cit">
+      <span class="cit-link">[3]</span>
+      <div class="cit-card">
+        <div class="cit-title">Calcium entry via NMDA receptors and voltage-gated channels in LTP induction</div>
+        <div class="cit-authors">Grover LM, Teyler TJ.</div>
+        <span class="cit-journal">Nature &middot; 1990</span>
+        <div class="cit-summary"><strong>One-liner</strong>Two distinct calcium entry pathways — NMDA receptors and voltage-gated channels — independently contribute to LTP induction in CA1, with their relative importance depending on stimulation intensity.</div>
+        <div class="arrow"></div>
+      </div>
+    </span>
+
+    , suggesting a dual-pathway model for plasticity induction that may explain the variable efficacy of different <span class="ac">rTMS</span> protocols across studies.
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ActivePaper — Interactive Reader</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+  .ap-root { width: 100%; max-width: 860px; }
+  .ap-logo { font-size: 18px; font-weight: 600; color: #111; letter-spacing: -.3px; margin-bottom: 1rem; }
+  .ap-logo span { color: #185FA5; }
+  .ap-pill { font-size: 11px; padding: 3px 8px; border-radius: 20px; background: #E6F1FB; color: #0C447C; border: .5px solid #85B7EB; margin-left: 8px; font-weight: 400; }
+  .ap-paper { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: visible; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .ap-paper-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid #e2e8f0; }
+  .ap-paper-title { font-size: 15px; font-weight: 600; color: #111; margin: 0 0 6px; line-height: 1.4; }
+  .ap-meta { font-size: 12px; color: #64748b; }
+  .ap-one-liner { background: #E6F1FB; border-left: 3px solid #185FA5; padding: 8px 12px; margin: 10px 0 0; border-radius: 0 6px 6px 0; font-size: 13px; color: #042C53; font-style: italic; }
+  .ap-toolbar { display: flex; gap: 8px; padding: 10px 1.5rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; align-items: center; }
+  .ap-btn { font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; color: #64748b; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all .15s; }
+  .ap-btn.active { background: #E6F1FB; color: #185FA5; border-color: #85B7EB; }
+  .ap-body { display: flex; }
+  .ap-content { flex: 1; padding: 1.25rem 1.5rem; font-size: 14px; line-height: 1.9; color: #1e293b; }
+  .ap-sidebar { width: 190px; border-left: 1px solid #e2e8f0; padding: 1rem; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+
+  .tt-wrap { position: relative; display: inline; }
+  .tt-wrap:hover .tooltip { display: block; }
+
+  .keyword { background: #E6F1FB; border-bottom: 2px solid #378ADD; cursor: pointer; padding: 1px 2px; border-radius: 2px; color: #0C447C; transition: all .2s; }
+  .acronym { background: #B5D4F4; border-bottom: 2px dashed #185FA5; cursor: pointer; padding: 1px 2px; border-radius: 2px; color: #042C53; transition: all .2s; }
+  .citation { color: #185FA5; cursor: pointer; font-size: 12px; vertical-align: super; background: #E6F1FB; border-radius: 3px; padding: 0 3px; transition: all .2s; }
+
+  .hide-keywords .keyword { background: transparent; border-bottom: none; color: inherit; cursor: default; }
+  .hide-keywords .kw-tt:hover .tooltip { display: none; }
+  .hide-acronyms .acronym { background: transparent; border-bottom: none; color: inherit; cursor: default; }
+  .hide-acronyms .ac-tt:hover .tooltip { display: none; }
+  .hide-citations .citation { background: transparent; color: inherit; font-size: inherit; vertical-align: baseline; cursor: default; }
+  .hide-citations .ci-tt:hover .tooltip { display: none; }
+
+  .tooltip { display: none; position: absolute; z-index: 20; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; font-size: 12px; width: 230px; line-height: 1.5; color: #1e293b; left: 0; top: 26px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .tooltip.up { bottom: 26px; top: auto; }
+  .tooltip strong { color: #0C447C; display: block; margin-bottom: 3px; }
+
+  .simplify-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin: 0 0 10px; font-size: 13px; color: #475569; display: none; }
+  .simplify-box.shown { display: block; }
+  .simplify-label { font-size: 11px; color: #185FA5; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+
+  .side-card { background: #f8fafc; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #64748b; border: 1px solid #e2e8f0; }
+  .side-card strong { display: block; font-size: 11px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+  .video-thumb { border-radius: 8px; background: #0C447C; height: 72px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="ap-root">
+  <div style="margin-bottom:1rem"><span class="ap-logo">active<span>paper</span><span class="ap-pill">interactive reader</span></span></div>
+
+  <div class="ap-paper">
+    <div class="ap-paper-header">
+      <p class="ap-paper-title">Synaptic plasticity and long-term potentiation in hippocampal CA1 neurons following repetitive transcranial magnetic stimulation</p>
+      <div class="ap-meta">Chen et al. &middot; Nature Neuroscience &middot; 2024 &middot; DOI: 10.1038/s41593-024-01621-x</div>
+      <div class="ap-one-liner">One-liner: Repeated magnetic brain stimulation strengthens memory-related connections in a key brain region by activating a specific molecular signalling pathway.</div>
+    </div>
+
+    <div class="ap-toolbar">
+      <span style="font-size:11px;color:#64748b;margin-right:2px">Layers:</span>
+      <button class="ap-btn active" id="btn-simplify" onclick="toggleFeature('simplify', this)"><i class="ti ti-sparkles"></i> AI simplify</button>
+      <button class="ap-btn active" id="btn-keywords" onclick="toggleFeature('keywords', this)"><i class="ti ti-highlight"></i> Keywords</button>
+      <button class="ap-btn active" id="btn-acronyms" onclick="toggleFeature('acronyms', this)"><i class="ti ti-letter-a"></i> Acronyms</button>
+      <button class="ap-btn active" id="btn-citations" onclick="toggleFeature('citations', this)"><i class="ti ti-book"></i> Citations</button>
+    </div>
+
+    <div class="ap-body">
+      <div class="ap-content" id="paper-content">
+        <div class="simplify-box shown" id="simplify-box">
+          <div class="simplify-label"><i class="ti ti-sparkles"></i> AI simplification</div>
+          When brain cells fire together repeatedly, their connections get stronger — a process thought to underlie learning and memory. This study shows that non-invasive magnetic stimulation can trigger this strengthening in the hippocampus, by switching on a signalling cascade involving the BDNF protein.
+        </div>
+
+        <p>
+          <span class="tt-wrap kw-tt"><span class="keyword">Long-term potentiation</span><span class="tooltip"><strong>Long-term potentiation (LTP)</strong>A lasting increase in synaptic strength following high-frequency stimulation. Considered a key cellular mechanism underlying learning and memory.</span></span>
+          (<span class="tt-wrap ac-tt"><span class="acronym">LTP</span><span class="tooltip"><strong>LTP</strong>Long-Term Potentiation — a persistent strengthening of synapses based on patterns of activity, widely regarded as the synaptic basis of learning.</span></span>)
+          represents a persistent increase in synaptic efficacy following repeated co-activation of pre- and postsynaptic neurons.<span class="tt-wrap ci-tt"><span class="citation">[1]</span><span class="tooltip"><strong>Bliss &amp; Lømo, 1973</strong>The landmark study first demonstrating long-lasting synaptic enhancement in the rabbit hippocampus following high-frequency stimulation.</span></span>
+          In hippocampal
+          <span class="tt-wrap kw-tt"><span class="keyword">CA1 neurons</span><span class="tooltip"><strong>CA1 neurons</strong>Pyramidal cells in the CA1 subfield of the hippocampus — a critical relay for spatial navigation and episodic memory formation.</span></span>,
+          this process is mediated through
+          <span class="tt-wrap kw-tt"><span class="keyword">NMDA receptor</span><span class="tooltip"><strong>NMDA receptor</strong>N-methyl-D-aspartate receptor — acts as a coincidence detector, requiring both pre- and postsynaptic activation to allow calcium influx.</span></span>
+          activation and downstream
+          <span class="tt-wrap ac-tt"><span class="acronym">BDNF</span><span class="tooltip"><strong>BDNF</strong>Brain-Derived Neurotrophic Factor — a protein supporting neuron growth and the late phase of LTP.</span></span>–<span class="tt-wrap ac-tt"><span class="acronym">TrkB</span><span class="tooltip"><strong>TrkB</strong>Tropomyosin receptor kinase B — the primary receptor for BDNF, triggering consolidation cascades.</span></span>
+          signalling.<span class="tt-wrap ci-tt"><span class="citation">[2]</span><span class="tooltip"><strong>Minichiello, 2009</strong>BDNF–TrkB signalling in synaptic plasticity and memory. Nature Reviews Neuroscience.</span></span>
+        </p>
+
+        <p>
+          Repetitive
+          <span class="tt-wrap kw-tt"><span class="keyword">transcranial magnetic stimulation</span><span class="tooltip up"><strong>Transcranial magnetic stimulation (TMS)</strong>A non-invasive technique using magnetic fields to induce electric currents in targeted cortical regions without surgery.</span></span>
+          (<span class="tt-wrap ac-tt"><span class="acronym">rTMS</span><span class="tooltip up"><strong>rTMS</strong>Repetitive Transcranial Magnetic Stimulation — repeated TMS pulses producing lasting changes in cortical excitability.</span></span>)
+          has demonstrated promising clinical efficacy in treatment-resistant depression and
+          <span class="tt-wrap kw-tt"><span class="keyword">neuroplasticity</span><span class="tooltip up"><strong>Neuroplasticity</strong>The brain's ability to reorganise itself by forming new neural connections in response to learning, experience, or injury.</span></span>
+          induction.<span class="tt-wrap ci-tt"><span class="citation">[3]</span><span class="tooltip up"><strong>Huang et al., 2005</strong>Theta-burst stimulation of the human motor cortex produces LTP-like changes in cortical excitability lasting up to an hour. Neuron.</span></span>
+        </p>
+      </div>
+
+      <div class="ap-sidebar">
+        <div class="side-card">
+          <strong><i class="ti ti-player-play" style="font-size:12px"></i> Video abstract</strong>
+          <div class="video-thumb"><i class="ti ti-player-play" style="color:#B5D4F4;font-size:22px"></i></div>
+          <span style="font-size:11px;">3 min &middot; Dr. L. Chen</span>
+        </div>
+        <div class="side-card">
+          <strong><i class="ti ti-chart-bar" style="font-size:12px"></i> Figure 2</strong>
+          <div style="height:56px;display:flex;align-items:flex-end;gap:4px;padding:4px 0">
+            <div style="flex:1;background:#B5D4F4;border-radius:3px 3px 0 0;height:40%"></div>
+            <div style="flex:1;background:#85B7EB;border-radius:3px 3px 0 0;height:65%"></div>
+            <div style="flex:1;background:#378ADD;border-radius:3px 3px 0 0;height:90%"></div>
+            <div style="flex:1;background:#185FA5;border-radius:3px 3px 0 0;height:75%"></div>
+          </div>
+          <span style="font-size:11px;color:#185FA5;cursor:pointer">Open interactive ↗</span>
+        </div>
+        <div class="side-card">
+          <strong><i class="ti ti-messages" style="font-size:12px"></i> Ask about this paper</strong>
+          <span style="font-size:11px">Ask the AI anything about methods, results or implications.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const content = document.getElementById('paper-content');
+  const state = { simplify: true, keywords: true, acronyms: true, citations: true };
+
+  function toggleFeature(feature, btn) {
+    state[feature] = !state[feature];
+    btn.classList.toggle('active', state[feature]);
+    if (feature === 'simplify') {
+      document.getElementById('simplify-box').classList.toggle('shown', state[feature]);
+      return;
+    }
+    const classMap = { keywords: 'hide-keywords', acronyms: 'hide-acronyms', citations: 'hide-citations' };
+    content.classList.toggle(classMap[feature], !state[feature]);
+  }
+</script>
+</body>
+</html>
