@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ActivePaper — Interactive Microscopy</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f7fa;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.ap-root { width: 100%; max-width: 860px; }
+
+.ap-logo {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 1rem;
+}
+.ap-logo span { color: #185FA5; }
+
+.ap-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: #E6F1FB;
+  color: #0C447C;
+  border: .5px solid #85B7EB;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.micro-wrap { position: relative; display: inline-block; width: 100%; }
+
+.micro-wrap img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Hotspots */
+.hotspot {
+  position: absolute;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: rgba(255,255,255,0.15);
+}
+
+.hotspot:hover {
+  border-color: rgba(255,255,255,0.75);
+}
+
+.hotspot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Labels */
+.label-card {
+  display: none;
+  position: absolute;
+  z-index: 10;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 12px;
+  width: 190px;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.hotspot:hover .label-card { display: block; }
+
+.stage {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0C447C;
+}
+
+.desc {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.left { right: calc(100% + 8px); top: 50%; transform: translateY(-50%); }
+.right { left: calc(100% + 8px); top: 50%; transform: translateY(-50%); }
+.above { bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); }
+.below { top: calc(100% + 8px); left: 50%; transform: translateX(-50%); }
+
+.hint {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 8px;
+  display: flex;
+  gap: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="ap-root">
+  <div class="ap-logo">active<span>paper</span></div>
+  <div class="ap-badge"><i class="ti ti-microscope"></i> interactive microscopy panel</div>
+
+  <div class="micro-wrap">
+
+    <!-- YOUR NEW IMAGE -->
+    <img src="microscopy.jpg" alt="Plant cells showing stages of mitosis">
+
+    <!-- HOTSPOTS -->
+
+    <!-- Anaphase -->
+    <div class="hotspot" style="left:48%;top:40%;width:12%;padding-bottom:12%">
+      <div class="label-card right">
+        <div class="stage">Anaphase</div>
+        <div class="desc">Sister chromatids move toward opposite poles.</div>
+      </div>
+    </div>
+
+    <!-- Metaphase -->
+    <div class="hotspot" style="left:45%;top:28%;width:11%;padding-bottom:11%">
+      <div class="label-card right">
+        <div class="stage">Metaphase</div>
+        <div class="desc">Chromosomes align at the cell’s equator.</div>
+      </div>
+    </div>
+
+    <!-- Prophase -->
+    <div class="hotspot" style="left:70%;top:12%;width:13%;padding-bottom:13%">
+      <div class="label-card left">
+        <div class="stage">Prophase</div>
+        <div class="desc">Chromosomes condense; nuclear membrane breaks down.</div>
+      </div>
+    </div>
+
+    <!-- Interphase -->
+    <div class="hotspot" style="left:10%;top:70%;width:14%;padding-bottom:14%">
+      <div class="label-card right">
+        <div class="stage">Interphase</div>
+        <div class="desc">Cell grows and DNA replicates.</div>
+      </div>
+    </div>
+
+    <!-- Interphase -->
+    <div class="hotspot" style="left:80%;top:60%;width:13%;padding-bottom:13%">
+      <div class="label-card left">
+        <div class="stage">Interphase</div>
+        <div class="desc">Normal cell activity with intact nucleus.</div>
+      </div>
+    </div>
+
+    <!-- Prophase -->
+    <div class="hotspot" style="left:60%;top:25%;width:12%;padding-bottom:12%">
+      <div class="label-card left">
+        <div class="stage">Prophase</div>
+        <div class="desc">Chromosomes condense at the start of mitosis.</div>
+      </div>
+    </div>
+
+    <!-- Interphase -->
+    <div class="hotspot" style="left:50%;top:72%;width:14%;padding-bottom:14%">
+      <div class="label-card above">
+        <div class="stage">Interphase</div>
+        <div class="desc">DNA replication and growth occur.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hint">
+    <i class="ti ti-hand-finger"></i>
+    Hover over a cell to identify its mitotic stage
+  </div>
+</div>
+
+</body>
+</html>
